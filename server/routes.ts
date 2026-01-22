@@ -85,8 +85,17 @@ export async function registerRoutes(
     try {
       const { topic, niche, count } = api.content.generate.input.parse(req.body);
 
+      // Fetch high engagement tweets for context
+      const highEngagementTweets = await storage.getHighEngagementTweets();
+      const contextTweets = highEngagementTweets.slice(0, 5).map(t => t.content).join("\n- ");
+
       // Use OpenAI to generate tweets
-      const prompt = `Generate ${count} engaging tweet ideas for the niche "${niche}" about the topic "${topic}". 
+      const prompt = `Generate ${count} engaging tweet ideas for the niche "${niche}" about the topic "${topic}".
+      
+      Analyze these top-performing tweets for style and format patterns:
+      ${contextTweets}
+
+      Based on these patterns, generate new tweets.
       Each tweet should be distinct, viral-worthy, and under 280 characters. 
       Return ONLY a raw JSON array of strings, e.g. ["Tweet 1", "Tweet 2"].`;
 
