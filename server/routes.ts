@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
+import { type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
@@ -60,7 +60,8 @@ export async function registerRoutes(
             }],
             max_completion_tokens: 5,
           });
-          const relevanceScore = parseInt(relevanceResponse.choices[0].message.content || "50") || 50;
+          const relevanceResult = (relevanceResponse.choices[0].message.content as any) || "50";
+          const relevanceScore = parseInt(Array.isArray(relevanceResult) ? relevanceResult[0] : relevanceResult) || 50;
 
           fetchedTweets.push({
             twitterId: tweet.id,
@@ -133,16 +134,9 @@ export async function registerRoutes(
       let generatedTexts: string[] = [];
       try {
         const content = response.choices[0].message.content || "{}";
-        // Sometimes models return { "tweets": [...] } or just [...]
         const parsed = JSON.parse(content);
-        if (Array.isArray(parsed)) {
-          generatedTexts = parsed;
-        } else if (parsed.tweets && Array.isArray(parsed.tweets)) {
-          generatedTexts = parsed.tweets;
-        } else {
-          // Fallback parsing if JSON structure is unexpected
-          generatedTexts = Object.values(parsed).filter(v => typeof v === 'string') as string[];
-        }
+        const rawTexts = Array.isArray(parsed) ? parsed : (parsed.tweets || Object.values(parsed));
+        generatedTexts = rawTexts.filter((v: any) => typeof v === 'string') as string[];
       } catch (e) {
         console.error("Failed to parse AI response", e);
         generatedTexts = ["Error generating content. Please try again."];
