@@ -73,16 +73,7 @@ export async function registerRoutes(
         }
       } catch (twitterErr) {
         console.error("Twitter API Error:", twitterErr);
-        // Fallback to mock data if API fails (e.g. rate limit or bad credentials)
-        fetchedTweets = [
-          {
-            twitterId: `mock_${Date.now()}_1`,
-            authorUsername: "tech_guru",
-            content: `Just tried the new ${offer} tool. It's actually game changing for my workflow. #productivity`,
-            engagementScore: 150,
-            relevanceScore: 95
-          }
-        ];
+        throw new Error("Failed to fetch real Twitter data. Please check your credentials.");
       }
 
       const savedTweets = [];
@@ -200,44 +191,6 @@ export async function registerRoutes(
     }
   });
 
-  // Seed data on startup
-  await seedDatabase();
-
+  // No seed data - keeping it 100% real
   return httpServer;
-}
-
-// Seed function to be called from index.ts or manually
-export async function seedDatabase() {
-  const existingTweets = await storage.getTweets();
-  if (existingTweets.length === 0) {
-    await storage.createTweet({
-      twitterId: "seed_1",
-      authorUsername: "elonmusk",
-      content: "Building the future of X. #AI",
-      engagementScore: 50000,
-      relevanceScore: 100
-    });
-    await storage.createTweet({
-      twitterId: "seed_2",
-      authorUsername: "sama",
-      content: "AGI is closer than you think.",
-      engagementScore: 25000,
-      relevanceScore: 90
-    });
-  }
-
-  const existingLeads = await storage.getLeads();
-  if (existingLeads.length === 0) {
-    await storage.createLead({
-      username: "potential_client_1",
-      status: "new",
-      twitterProfileUrl: "https://twitter.com/potential_client_1"
-    });
-    await storage.createLead({
-      username: "interested_user_99",
-      status: "contacted",
-      repliesCount: 1,
-      lastContactedAt: new Date()
-    });
-  }
 }
