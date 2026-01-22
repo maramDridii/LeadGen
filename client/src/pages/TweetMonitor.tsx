@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { PageHeader } from "@/components/PageHeader";
 import { useMonitorTweets, useTweets } from "@/hooks/use-tweets";
-import { Search, Loader2, MessageCircle, Repeat2, Heart, ExternalLink } from "lucide-react";
+import { Search, Loader2, MessageCircle, Repeat2, Heart, ExternalLink, Twitter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function TweetMonitor() {
