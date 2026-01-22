@@ -8,9 +8,8 @@ import {
   type DashboardStats
 } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
-import { chatStorage, type IChatStorage } from "./replit_integrations/chat/storage";
 
-export interface IStorage extends IChatStorage {
+export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -35,14 +34,6 @@ export interface IStorage extends IChatStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // Mixin chat storage methods
-  getConversation = chatStorage.getConversation;
-  getAllConversations = chatStorage.getAllConversations;
-  createConversation = chatStorage.createConversation;
-  deleteConversation = chatStorage.deleteConversation;
-  getMessagesByConversation = chatStorage.getMessagesByConversation;
-  createMessage = chatStorage.createMessage;
-
   // Users
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));

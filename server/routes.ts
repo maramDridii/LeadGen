@@ -3,9 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { registerChatRoutes } from "./replit_integrations/chat";
-import { registerImageRoutes } from "./replit_integrations/image";
-import { registerAudioRoutes } from "./replit_integrations/audio";
 import OpenAI from "openai";
 
 import { TwitterApi } from "twitter-api-v2";
@@ -30,11 +27,6 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Register Integration Routes
-  registerChatRoutes(app);
-  registerImageRoutes(app);
-  registerAudioRoutes(app);
-
   // === DASHBOARD ===
   app.get(api.dashboard.stats.path, async (req, res) => {
     const stats = await storage.getDashboardStats();

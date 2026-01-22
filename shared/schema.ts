@@ -81,5 +81,3 @@ export type DashboardStats = {
   conversions: number;
   ctrAverage: number;
 };
-
-export * from "./models/chat";
